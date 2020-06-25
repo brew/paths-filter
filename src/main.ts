@@ -62,8 +62,8 @@ async function getChangedFiles(token: string): Promise<string[] | null> {
 async function getChangedFilesFromPush(): Promise<string[] | null> {
   const push = github.context.payload as Webhooks.WebhookPayloadPush
 
-  // No change detection for pushed tags
-  if (git.isTagRef(push.ref)) return null
+  // No change detection for pushed tags with no base ref
+  if (core.getInput('base', {required: false}) === '' && git.isTagRef(push.ref)) return null
 
   // Get base from input or use repo default branch.
   // It it starts with 'refs/', it will be trimmed (git fetch refs/heads/<NAME> doesn't work)
